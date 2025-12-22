@@ -205,3 +205,19 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+.vscode/
+.idea/
+
+# Data
+*.csv
+*.json
+*.pkl
+*.pickle
+
+# OS
+.DS_Store
+Thumbs.db
+
+.ipynb_checkpoints
+data/raw/
+data/processed/
