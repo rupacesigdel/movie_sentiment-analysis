@@ -211,7 +211,6 @@ __marimo__/
 # Data
 *.csv
 *.json
-*.pkl
 *.pickle
 
 # OS
