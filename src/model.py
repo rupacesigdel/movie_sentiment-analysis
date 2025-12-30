@@ -1,44 +1,33 @@
-import pandas as pd
-import joblib
+import os
+import pickle
 
-from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import accuracy_score, classification_report
+from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
 
-from features import get_vectorizer
+from features import run_feature_engineering
 
 
 def train_model():
-    df = pd.read_csv('C:/Users/a2z/OneDrive/Desktop/sentiment-analysis-project/movie_sentiment-analysis/data/raw/imdb.csv')
+    print("🔹 Starting Model Training")
 
-    # 2. Features & labels
-    X = df['review']
-    y = df['sentiment'].map({'positive': 1, 'negative': 0})
+    X_train_tfidf, X_test_tfidf, y_train, y_test = run_feature_engineering()
 
-    # 3. Vectorization
-    vectorizer = get_vectorizer()
-    X_vec = vectorizer.fit_transform(X)
-
-    # 4. Train-test split
-    X_train, X_test, y_train, y_test = train_test_split(
-        X_vec, y, test_size=0.2, random_state=42
-    )
-
-    # 5. Train model
     model = LogisticRegression(max_iter=1000)
-    model.fit(X_train, y_train)
+    model.fit(X_train_tfidf, y_train)
 
-    # 6. Evaluate
-    y_pred = model.predict(X_test)
+    y_pred = model.predict(X_test_tfidf)
 
+    print("\n📊 Model Evaluation")
     print("Accuracy:", accuracy_score(y_test, y_pred))
     print("\nClassification Report:\n")
     print(classification_report(y_test, y_pred))
+    print("Confusion Matrix:\n", confusion_matrix(y_test, y_pred))
 
-    joblib.dump(model, "models/sentiment_model.pkl")
-    joblib.dump(vectorizer, "models/vectorizer.pkl")
+    os.makedirs("models", exist_ok=True)
+    with open("models/sentiment_model.pkl", "wb") as f:
+        pickle.dump(model, f)
 
-    print("\n✅ Model and vectorizer saved successfully!")
+    print("\n✅ Model trained and saved successfully")
 
 
 if __name__ == "__main__":
